@@ -1,15 +1,35 @@
 #!/bin/bash
-set -x
+#set -x
+set -e
+
 #brew install qemu
+
+
+# Check if required files/directories exist
+if [ ! -d "working" ]; then
+    mkdir working
+fi
+
+if [ ! -f "dos622_boot.img" ]; then
+    echo "Error: dos622_boot.img not found."
+    exit 1
+fi
+
+for i in {1..3}
+do
+    if [ ! -f "software/dos622/Disk${i}.img" ]; then
+        echo "Error: Disk${i}.img not found."
+        exit 1
+    fi
+done
 
 ### CREATE IMAGE
 
+echo "Creating Image..."
 dd if=/dev/zero of=working/dos622.img bs=1m count=1024
-#device=$(hdiutil attach -nomount working/dos622.img)
-#sudo newfs_msdos -F 16 $device
-#hdiutil detach $device
 
 ### FORMAT IMAGE
+echo "Formatting Image..."
 
 {
     sleep 10;            # wait for DOS to boot
@@ -71,18 +91,58 @@ dd if=/dev/zero of=working/dos622.img bs=1m count=1024
     echo "quit";         # quit QEMU
 } | qemu-system-i386 -fda dos622_boot.img -hda working/dos622.img -boot a -monitor stdio
 
-### Dev - Delete image
+
+# Check if image creation was successful
+if [ ! -f "working/dos622.img" ]; then
+    echo "Error: Failed to create dos622.img."
+    exit 1
+fi
+
+echo "Copying and Cleaning Up..."
 cp working/dos622.img hand386_v0.img
 rm working/dos622.img
 
+### Install DOS 6.22
 
-### REBOOT AND PRESS ENTER TWICE
+echo "Installing DOS 6.22..."
+
+### Install DOS 6.22
 
 {
-    sleep 5;             # Wait a bit for QEMU to fully boot up
-    echo "sendkey ret";  # Press Enter
-    sleep 1;             # Wait a second
-    echo "sendkey ret";  # Press Enter again
-    sleep 10;            # Allow some time if needed
-    echo "quit";         # quit QEMU
-} | qemu-system-i386 -hda hand386_v0.img -boot c -monitor stdio
+    sleep 5;            # Wait for DOS installation to start
+    echo "sendkey ret"; # Press Enter
+    sleep 1;            # Wait a second
+
+    echo "sendkey down";# Press Down arrow key
+    sleep 1;            # Wait a second
+
+    echo "sendkey ret"; # Press Enter
+    sleep 1;            # Wait a second
+
+    echo "sendkey ret"; # Press Enter again
+    sleep 1;            # Wait a second
+
+    echo "sendkey ret";  # Press Enter yet again
+    sleep 10;            # Assume a wait time for Disk1 to finish its operations
+
+    echo "eject -f floppy0";  # Eject Disk1.img
+    echo "change floppy0 software/dos622/Disk2.img"; # Insert Disk2.img
+
+    echo "sendkey ret";  # Press Enter yet again
+    sleep 10;            # Assume a wait time for Disk2 to finish its operations
+
+    echo "eject -f floppy0";  # Eject Disk2.img
+    echo "change floppy0 software/dos622/Disk3.img"; # Insert Disk3.img
+
+    echo "sendkey ret";  # Press Enter yet again
+    sleep 10;            # Assume a wait time for Disk3 to finish its operations
+
+    echo "eject -f floppy0";  # Eject Disk3.img
+    echo "sendkey ret";  # Press Enter yet again
+    echo "sendkey ret";  # Press Enter yet again
+
+    # Add more waits or key presses as necessary for Disk2 operations.
+    echo "quit";
+} | qemu-system-i386 -fda software/dos622/Disk1.img -hda hand386_v0.img -boot a -monitor stdio
+
+echo "DOS 6.22 Installation Complete."
