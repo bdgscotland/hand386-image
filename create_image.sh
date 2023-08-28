@@ -212,7 +212,11 @@ echo "Installing Windows 3.11..."
     sleep 15;              # Wait a bit
 
     echo "sendkey ret";        # Press Enter
+    sleep 5;
+    echo "sendkey ret";        # Press Enter
+    sleep 5;    
     echo "sendkey alt-s";      # Press Alt+S (This command might depend on the specific configuration)
+    sleep 1;
     echo "sendkey ret";        # Press Enter
 
     sleep 15;              # Wait a bit
