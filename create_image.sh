@@ -100,6 +100,7 @@ fi
 
 echo "Copying and Cleaning Up..."
 cp working/dos622.img hand386_v0.img
+cp working/dos622.img hand386_dos622.img
 rm working/dos622.img
 
 ### Install DOS 6.22
