@@ -170,7 +170,7 @@ echo "Installing Windows 3.11..."
 
     echo "sendkey ret";        # Press Enter
     echo "sendkey ret";        # Press Enter
-    sleep 5;               # Some wait time
+    sleep 15;               # Some wait time
     
     echo "eject -f floppy0";   # Eject current floppy image
     echo "change floppy0 software/win311/DISK2.IMG";   # Insert DISK2
@@ -197,19 +197,19 @@ echo "Installing Windows 3.11..."
 
     echo "sendkey ret";        # Press Enter
     echo "sendkey ret";        # Press Enter
-    sleep 15;
+    sleep 25;
     
     echo "eject -f floppy0";   # Eject current floppy image
     echo "change floppy0 software/win311/DISK4.IMG";   # Insert DISK4
                       # Wait a bit    
     echo "sendkey ret";        # Press Enter
-    sleep 15;              # Wait a bit
+    sleep 25;              # Wait a bit
     
 
     echo "eject -f floppy0";   # Eject DISK4
     echo "change floppy0 software/win311/DISK5.IMG";   # Insert DISK5
     echo "sendkey ret";        # Press Enter
-    sleep 15;              # Wait a bit
+    sleep 25;              # Wait a bit
 
     echo "sendkey ret";        # Press Enter
     sleep 5;
@@ -219,7 +219,7 @@ echo "Installing Windows 3.11..."
     sleep 1;
     echo "sendkey ret";        # Press Enter
 
-    sleep 15;              # Wait a bit
+    sleep 25;              # Wait a bit
     echo "quit";           # Quit QEMU
 
 } | qemu-system-i386 -fda software/win311/DISK1.IMG -hda hand386_v0.img -boot c -monitor stdio
